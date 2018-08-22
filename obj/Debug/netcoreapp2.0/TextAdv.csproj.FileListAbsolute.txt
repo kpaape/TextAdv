@@ -1,0 +1,11 @@
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\bin\Debug\netcoreapp2.0\TextAdv.deps.json
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\bin\Debug\netcoreapp2.0\TextAdv.runtimeconfig.json
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\bin\Debug\netcoreapp2.0\TextAdv.runtimeconfig.dev.json
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\bin\Debug\netcoreapp2.0\TextAdv.dll
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\bin\Debug\netcoreapp2.0\TextAdv.pdb
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\obj\Debug\netcoreapp2.0\TextAdv.csprojResolveAssemblyReference.cache
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\obj\Debug\netcoreapp2.0\TextAdv.csproj.CoreCompileInputs.cache
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\obj\Debug\netcoreapp2.0\TextAdv.AssemblyInfoInputs.cache
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\obj\Debug\netcoreapp2.0\TextAdv.AssemblyInfo.cs
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\obj\Debug\netcoreapp2.0\TextAdv.dll
+C:\Users\gohas\Desktop\DojoAssignments\NetCore\c_sharp_net_fund\TextAdv\obj\Debug\netcoreapp2.0\TextAdv.pdb
