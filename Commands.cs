@@ -2,18 +2,19 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 
 namespace TextAdv
 {
-    class Commands
+    public class Commands
     {
         static public Human StartGame()
         {
             bool pass = false;
-            Human hero = new Human("Player");
+            Human hero = new Human("Player", "Warrior", 1);
             while(pass == false)
             {
-                Console.WriteLine($"Load game or enter your class type; wizard, ninja, or samurai...");
+                Console.WriteLine($"Load game or enter your class type; warrior, wizard...");
                 string[] enterClass = Console.ReadLine().Split(" ");
                 switch(enterClass[0])
                 {
@@ -27,9 +28,9 @@ namespace TextAdv
                             string line;
                             try 
                             {
-                                string[] statArr = {"class", "health", "mana", "strength", "intelligence", "dexterity", "gold"};
+                                string[] statArr = {"name", "class", "health", "mana", "strength", "intelligence", "dexterity", "gold"};
                                 int i = 0;
-                                string[] newStats = new string[8];
+                                string[] newStats = new string[10];
                                 StreamReader sr = new StreamReader($"{enterClass[1]}.txt");
                                 line = sr.ReadLine();
                                 while (line != null) 
@@ -38,8 +39,8 @@ namespace TextAdv
                                     i++;
                                     line = sr.ReadLine();
                                 }
-                                string loadedStats = $"{newStats[0]}|{newStats[1]}|{newStats[2]}|{newStats[3]}|{newStats[4]}|{newStats[5]}|{newStats[6]}";
-                                string loadedHash = newStats[7];
+                                string loadedStats = $"{newStats[0]}|{newStats[1]}|{newStats[2]}|{newStats[3]}|{newStats[4]}|{newStats[5]}|{newStats[6]}|{newStats[7]}|{newStats[8]}";
+                                string loadedHash = newStats[9];
                                 
                                 string hashedStats = "";
                                 using(MD5 md5Hash = MD5.Create())
@@ -51,43 +52,34 @@ namespace TextAdv
                                     Console.WriteLine("Save file has been tampered with... canceling");
                                     break;
                                 }
-                                switch(newStats[0])
-                                {
-                                    case "Wizard":
-                                        hero = new Wizard("The Hero");
-                                        break;
-                                    case "Ninja":
-                                        hero = new Ninja("The Hero");
-                                        break;
-                                    case "Samurai":
-                                        hero = new Samurai("The Hero");
-                                        break;
-                                }
+                                hero.name = newStats[0];
+                                hero.charClass = newStats[1];
                                 int statInt;
-                                if(Int32.TryParse(newStats[1], out statInt))
+                                if(Int32.TryParse(newStats[2], out statInt))
                                 {
                                     hero.health = statInt;
                                 }
-                                if(Int32.TryParse(newStats[2], out statInt))
+                                if(Int32.TryParse(newStats[3], out statInt))
                                 {
                                     hero.mana = statInt;
                                 }
-                                if(Int32.TryParse(newStats[3], out statInt))
+                                if(Int32.TryParse(newStats[4], out statInt))
                                 {
                                     hero.strength = statInt;
                                 }
-                                if(Int32.TryParse(newStats[4], out statInt))
+                                if(Int32.TryParse(newStats[5], out statInt))
                                 {
                                     hero.intelligence = statInt;
                                 }
-                                if(Int32.TryParse(newStats[5], out statInt))
+                                if(Int32.TryParse(newStats[6], out statInt))
                                 {
                                     hero.dexterity = statInt;
                                 }
-                                if(Int32.TryParse(newStats[6], out statInt))
+                                if(Int32.TryParse(newStats[7], out statInt))
                                 {
                                     hero.gold = statInt;
                                 }
+                                // need to load the inventory
                                 sr.Close();
                                 pass = true;
                                 Console.WriteLine($"Successfully loaded {enterClass[1]}.txt");
@@ -98,33 +90,50 @@ namespace TextAdv
                             }
                         }
                         break;
+                    case "warrior":
+                        // add enter name proc here
+                        hero = new Human("The Warrior", "Warrior", 1);
+                        pass = true;
+                        break;
                     case "wizard":
-                        hero = new Wizard("The Wizard");
+                        hero = new Human("The Wizard", "Wizard", 1);
                         pass = true;
-                        break;
-                    case "ninja":
-                        hero = new Ninja("The Ninja");
-                        pass = true;
-                        break;
-                    case "samurai":
-                        hero = new Samurai("The Samurai");
-                        pass = true;
+                        Spell fireBall = new Spell("Flames", 1, "Burn");// by default spells have a target of true
+                        Spell spark = new Spell("Spark", 3);
+                        Spell heal = new Spell("Heal", 5, false);// when set to false the spell will be cast on the user
+                        hero.spells.Add(fireBall);
+                        hero.spells.Add(heal);
+                        hero.spells.Add(spark);
                         break;
                     default:
-                        Console.WriteLine($"\"{enterClass}\" is not acceptable. Please type; wizard, ninja, or samurai");
+                        Console.WriteLine($"\"{enterClass}\" is not acceptable. Please type; warrior, or wizard");
                         break;
                 }
             }
+            ShowStats(hero);
+            Weapon sword = new Weapon("Sword", 1, 5);
+            Weapon dagger = new Weapon("Dagger", 1, 3);
+            hero.bag.Add(sword);
+            hero.bag.Add(dagger);
+            Consumable healthPotion = new Consumable("Health", 1); // (potion type, potion level) types can be health, mana, "status", buffs, and nerfs
+            hero.bag.Add(healthPotion);
+            Consumable manaPotion = new Consumable("Mana", 1);
+            hero.bag.Add(manaPotion);
             return hero;
         }
-        static public void TypeCommand(Human hero, Human enemy)
+        static public void TypeCommand(Human hero)
         {
             string[] enterCommand;
-            while(enemy.health > 0 && hero.health > 0)
+            bool quitGame = false;
+            while(hero.health > 0 && !quitGame)
             {
+                Messages.msgs.Clear();
                 enterCommand = Console.ReadLine().Split(" ");
                 switch(enterCommand[0])
                 {
+                    case "quit":
+                        quitGame = true;
+                        break;
                     case "save":
                         if(enterCommand.Length == 1)
                         {
@@ -135,14 +144,16 @@ namespace TextAdv
                             try 
                             {
                                 StreamWriter sw = new StreamWriter($"{enterCommand[1]}.txt");
-                                sw.WriteLine(hero.GetType().ToString().Split(".")[1]);
+                                sw.WriteLine(hero.name);
+                                sw.WriteLine(hero.charClass);
                                 sw.WriteLine(hero.health);
                                 sw.WriteLine(hero.mana);
                                 sw.WriteLine(hero.strength);
                                 sw.WriteLine(hero.intelligence);
                                 sw.WriteLine(hero.dexterity);
                                 sw.WriteLine(hero.gold);
-                                string saveFileHash = $"{hero.GetType().ToString().Split(".")[1]}|{hero.health}|{hero.mana}|{hero.strength}|{hero.intelligence}|{hero.dexterity}|{hero.gold}";
+                                sw.WriteLine(hero.bag);
+                                string saveFileHash = $"{hero.name}|{hero.charClass}|{hero.health}|{hero.mana}|{hero.strength}|{hero.intelligence}|{hero.dexterity}|{hero.gold}|{hero.bag}";
                                 using(MD5 md5Hash = MD5.Create())
                                 {
                                     sw.WriteLine($"{GetMd5Hash(md5Hash, saveFileHash)}");
@@ -158,93 +169,203 @@ namespace TextAdv
                         }
                         break;
                     case "help":
-                        Console.WriteLine("check - inspect something (check bag to view inventory)");
-                        Console.WriteLine("use - you will attempt to use something in your bag");
-                        Console.WriteLine("attack - you will attack the current enemy");
-                        Console.WriteLine("heal - wizards can use heal");
-                        Console.WriteLine("fireball - wizards can use fireball");
-                        Console.WriteLine("steal - ninjas can use steal");
-                        Console.WriteLine("getaway - ninjas can use getaway");
-                        Console.WriteLine("deathblow - samurai can use deathblow");
-                        Console.WriteLine("meditate - samurai can use meditate");
+                        Messages.msgs.Add("check... - inspect something (check bag to view inventory, check spells to view your spells, check stats will show your stats in detail)");
+                        Messages.msgs.Add("use... - you will attempt to use the specified item in your bag");
+                        Messages.msgs.Add("equip... - you will attempt to equip the specified item in your bag");
+                        Messages.msgs.Add("attack - you will attack the current enemy");
+                        Messages.msgs.Add("cast... - you will cast the specified spell from your spells on the current enemy");
+                        Messages.msgs.Add("quit - will end the game");
                         break;
                     case "attack":
-                        hero.Attack(enemy);
+                        hero.Attack();
                         break;
-                    case "fireball":
-                        if(hero.GetType() == typeof(Wizard))
+                    case "cast":
+                        if(enterCommand.Length == 1)
                         {
-                            (hero as Wizard).FireBall(enemy);
+                            Messages.msgs.Add("Please enter what spell you would like to use... \"cast *spell*\"");
                         }
                         else
                         {
-                            Console.WriteLine($"{hero.name} is not a wizard");
-                        }
-                        break;
-                    case "heal":
-                        if(hero.GetType() == typeof(Wizard))
-                        {
-                            (hero as Wizard).Heal();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{hero.name} is not a wizard");
-                        }
-                        break;
-                    case "steal":
-                        if(hero.GetType() == typeof(Ninja))
-                        {
-                            (hero as Ninja).Steal(enemy);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{hero.name} is not a ninja");
-                        }
-                        break;
-                    case "getaway":
-                        if(hero.GetType() == typeof(Ninja))
-                        {
-                            (hero as Ninja).GetAway();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{hero.name} is not a ninja");
-                        }
-                        break;
-                    case "deathblow":
-                        if(hero.GetType() == typeof(Samurai))
-                        {
-                            (hero as Samurai).DeathBlow(enemy);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{hero.name} is not a samurai");
-                        }
-                        break;
-                    case "meditate":
-                        if(hero.GetType() == typeof(Samurai))
-                        {
-                            (hero as Samurai).Meditate();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{hero.name} is not a samurai");
+                            string castSpell = enterCommand[1];
+                            for(int i = 2; i <= enterCommand.Length - 1; i++)
+                            {
+                                castSpell += " " + enterCommand[i];
+                            }
+                            switch(castSpell)
+                            {
+                                default:
+                                    bool spellFound = false;
+                                    Spell toCast = new Spell("", 0);
+                                    foreach(Spell obj in hero.spells)
+                                    {
+                                        if(obj.name == castSpell)
+                                        {
+                                            toCast = obj;
+                                            spellFound = true;
+                                        }
+                                    }
+                                    if(spellFound == false)
+                                    {
+                                        Messages.msgs.Add($"Could not find \"{castSpell}\" to use");
+                                    }
+                                    else
+                                    {
+                                        if(toCast.target == true && hero.target == null)
+                                        {
+                                            Messages.msgs.Add($"There is no enemy to cast {toCast.name} on");
+                                            break;
+                                        }
+                                        if(toCast.cost <= hero.mana)
+                                        {
+                                            toCast.Cast(hero);  // (who is casting the spell)
+                                        }
+                                        else
+                                        {
+                                            Messages.msgs.Add($"You do not have enough mana to cast {toCast.name}");
+                                            break;
+                                        }
+                                    }
+                                    break;
+                            }
                         }
                         break;
                     case "use":
                         if(enterCommand.Length == 1)
                         {
-                            Console.WriteLine("Please enter what you would like to use... \"use *item*\"");
+                            Messages.msgs.Add("Please enter what you would like to use... \"use *item*\"");
                         }
                         else
                         {
-                            switch(enterCommand[1])
+                            string useItem = enterCommand[1];
+                            for(int i = 2; i < enterCommand.Length; i++)
                             {
-                                case "potion":
-                                    Console.WriteLine($"You do not currently have a {enterCommand[1]}");
+                                useItem += " " + enterCommand[i];
+                            }
+                            switch(useItem)
+                            {
+                                default:
+                                    bool itemFound = false;
+                                    Item toUse = new Item("", 0);
+                                    foreach(Item obj in hero.bag)
+                                    {
+                                        if(obj.name == useItem)
+                                        {
+                                            toUse = obj;
+                                            itemFound = true;
+                                        }
+                                    }
+                                    if(itemFound == false)
+                                    {
+                                        Messages.msgs.Add($"Could not find \"{useItem}\" to use.");
+                                    }
+                                    else
+                                    {
+                                        if(toUse.GetType() == typeof(Consumable))
+                                        {
+                                            hero.Use((Consumable)toUse);
+                                        }
+                                        else
+                                        {
+                                            Messages.msgs.Add($"{useItem} does not have a use.");
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                    case "equip":
+                        if(enterCommand.Length == 1)
+                        {
+                            Messages.msgs.Add("Please enter what you would like to equip... \"equip *item*\"");
+                        }
+                        else
+                        {
+                            string equipItem = enterCommand[1];
+                            for(int i = 2; i < enterCommand.Length; i++)
+                            {
+                                equipItem += " " + enterCommand[i];
+                            }
+                            switch(equipItem)
+                            {
+                                default:
+                                    bool itemFound = false;
+                                    Item toEquip = new Item("", 0);
+                                    foreach(Item obj in hero.bag)
+                                    {
+                                        Console.WriteLine("* * * Checking bag!");
+                                        if(obj.name == equipItem)
+                                        {
+                                            toEquip = obj;
+                                            itemFound = true;
+                                        }
+                                    }
+                                    if(itemFound == false)
+                                    {
+                                        Messages.msgs.Add($"Could not find \"{equipItem}\" to equip.");
+                                    }
+                                    else
+                                    {
+                                        if(toEquip.GetType() == typeof(Weapon))
+                                        {
+                                            if(hero.equipWeapon != null)
+                                            {
+                                                hero.equipWeapon.equipped = false;
+                                                hero.equipWeapon = null;
+                                            }
+                                            hero.equipWeapon = (Weapon)toEquip;
+                                            hero.equipWeapon.equipped = true;
+                                            Messages.msgs.Add($"You equipped your {toEquip.name}.");
+                                        }
+                                        // ***********************************************************************************************      Equip Armor
+                                        // else
+                                        // {
+                                        //     if(toEquip.GetType() == typeof(Armor))
+                                        //     {
+                                        //         if(hero.equipArmor != null)
+                                        //         {
+                                        //             hero.equipArmor.equipped = false;
+                                        //             hero.equipArmor = null;
+                                        //         }
+                                        //         hero.equipArmor = (Armor)toEquip;
+                                        //         hero.equipWeapon.equipped = true;
+                                        //         Messages.msgs.Add($"You equipped your {toEquip.name}.");
+                                        //     }
+                                        // }
+                                        else
+                                        {
+                                            Messages.msgs.Add($"Could not equip \"{equipItem}\".");
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                    case "unequip":
+                        if(enterCommand.Length == 1)
+                        {
+                            Messages.msgs.Add("Please enter what you would like to unequip... \"unequip *weapon/armor*\".");
+                        }
+                        else
+                        {
+                            string equipItem = enterCommand[1];
+                            for(int i = 2; i < enterCommand.Length; i++)
+                            {
+                                equipItem += " " + enterCommand[i];
+                            }
+                            switch(equipItem)
+                            {
+                                case "weapon":
+                                    if(hero.equipWeapon == null)
+                                    {
+                                        Messages.msgs.Add("You do not have a weapon equipped.");
+                                        break;
+                                    }
+                                    hero.equipWeapon.equipped = false;
+                                    hero.equipWeapon = null;
+                                    Messages.msgs.Add("You have unequipped your weapon.");
                                     break;
                                 default:
-                                    Console.WriteLine($"Could not find \"{enterCommand[1]}\" to use");
+                                    Messages.msgs.Add("Please enter what you would like to unequip... \"unequip *weapon/armor*\".");
                                     break;
                             }
                         }
@@ -252,33 +373,78 @@ namespace TextAdv
                     case "check":
                         if(enterCommand.Length == 1)
                         {
-                            Console.WriteLine("Please enter what you would like to check... \"check *item*\"");
+                            Messages.msgs.Add("Please enter what you would like to check... \"check *item*\"");
                         }
                         else
                         {
                             switch(enterCommand[1])
                             {
                                 case "bag":
-                                    Console.WriteLine($"Gold: {hero.gold}");
+                                    Messages.msgs.Add($"Gold: {hero.gold}");
+                                    foreach(Item obj in hero.bag)
+                                    {
+                                        Messages.msgs.Add($"{obj.name}");
+                                    }
+                                    break;
+                                case "spells":
+                                    foreach(Spell obj in hero.spells)
+                                    {
+                                        string hasEffect = (obj.effect != null) ? obj.effect : "None";
+                                        Messages.msgs.Add($"{obj.name} -  Damage: {obj.damage * hero.intelligence}, Effect: {hasEffect}, Mana Cost: {obj.cost}");
+                                    }
                                     break;
                                 case "stats":
-                                    Console.WriteLine($"Health: {hero.health}");
-                                    Console.WriteLine($"Mana: {hero.mana}");
-                                    Console.WriteLine($"Strength: {hero.strength}");
-                                    Console.WriteLine($"Intelligence: {hero.intelligence}");
-                                    Console.WriteLine($"Dexterity: {hero.dexterity}");
+                                    Messages.msgs.Add($"{hero.name} - {hero.level}");
+                                    Messages.msgs.Add($"Experience: {hero.experience}");
+                                    if(hero.equipWeapon != null)
+                                    {
+                                        Messages.msgs.Add($"Weapon: {hero.equipWeapon.name}");
+                                    }
+                                    else
+                                    {
+                                        Messages.msgs.Add($"Weapon:");
+                                    }
+                                    Messages.msgs.Add($"Status: {hero.status}");
+                                    Messages.msgs.Add($"Health: {hero.health}/{hero.maxHealth}");
+                                    Messages.msgs.Add($"Mana: {hero.mana}/{hero.maxMana}");
+                                    Messages.msgs.Add($"Strength: {hero.strength}");
+                                    Messages.msgs.Add($"Defense: {hero.defense}");
+                                    Messages.msgs.Add($"Intelligence: {hero.intelligence}");
+                                    Messages.msgs.Add($"Dexterity: {hero.dexterity}");
                                     break;
                                 default:
-                                    Console.WriteLine($"Could not find \"{enterCommand[1]}\" to check");
+                                    Messages.msgs.Add($"Could not find \"{enterCommand[1]}\" to check");
                                     break;
                             }
                         }
                         break;
                     default:
-                        Console.WriteLine("You stand around looking off at nothing...");
+                        Messages.msgs.Add("You stand around looking off at nothing...");
                         break;
                 }
+                ShowStats(hero);
             }
+        }
+
+        public static void ShowStats(Human hero)
+        {
+            Console.Clear();
+            if(hero.target != null)
+            {
+                Console.WriteLine("----------------ENEMY-------------------");
+                Console.WriteLine($"{hero.target.name} - {hero.target.charClass}");
+                Console.WriteLine($"Health: {hero.target.health} / {hero.target.maxHealth}");
+                Console.WriteLine($"Mana: {hero.target.mana} / {hero.target.maxMana}");
+                Console.WriteLine($"Status: {hero.target.status}");
+                Console.WriteLine("----------------------------------------");
+            }
+            Console.WriteLine("----------------PLAYER------------------");
+            Console.WriteLine($"{hero.name} - {hero.charClass}");
+            Console.WriteLine($"Health: {hero.health} / {hero.maxHealth}");
+            Console.WriteLine($"Mana: {hero.mana} / {hero.maxMana}");
+            Console.WriteLine($"Status: {hero.status}");
+            Console.WriteLine("----------------------------------------");
+            Messages.ShowMsgs();
         }
         
         // below is mostly copy paste of microsoft's md5 section with minor edits

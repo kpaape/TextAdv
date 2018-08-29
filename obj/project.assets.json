@@ -664,23 +664,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\gohas\\.nuget\\packages\\": {},
+    "C:\\Users\\kpaape\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\gohas\\Desktop\\DojoAssignments\\NetCore\\c_sharp_net_fund\\TextAdv\\TextAdv.csproj",
+      "projectUniqueName": "C:\\Users\\kpaape\\Desktop\\MyProjects\\CSharp\\TextAdv\\TextAdv.csproj",
       "projectName": "TextAdv",
-      "projectPath": "C:\\Users\\gohas\\Desktop\\DojoAssignments\\NetCore\\c_sharp_net_fund\\TextAdv\\TextAdv.csproj",
-      "packagesPath": "C:\\Users\\gohas\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\gohas\\Desktop\\DojoAssignments\\NetCore\\c_sharp_net_fund\\TextAdv\\obj\\",
+      "projectPath": "C:\\Users\\kpaape\\Desktop\\MyProjects\\CSharp\\TextAdv\\TextAdv.csproj",
+      "packagesPath": "C:\\Users\\kpaape\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kpaape\\Desktop\\MyProjects\\CSharp\\TextAdv\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\gohas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\kpaape\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
